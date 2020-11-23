@@ -5,38 +5,39 @@ import * as yup from "yup";
 import { makeStyles } from '@material-ui/core/styles';
 import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
+import { FIELD_LABELS, VALIDATION_ERRORS } from "../../constants";
 
 const schema = yup.object().shape({
 	firstName: yup
 		.string()
-		.required("First Name is a required field"),
+		.required(VALIDATION_ERRORS.FIRST_NAME_REQUIRED),
 	lastName: yup
 		.string()
-		.required("Last Name is a required field"),
+		.required(VALIDATION_ERRORS.LAST_NAME_REQUIRED),
 	city: yup
 		.string()
-		.required("City is a required field"),
+		.required(VALIDATION_ERRORS.CITY_REQUIRED),
 	zipCode: yup
 		.string()
-		.required("Zip Code is a required field")
+		.required(VALIDATION_ERRORS.ZIP_CODE_REQUIRED)
 		.matches(
 			/^\d{5}$/,
 			{
-				message: "Zip code can only be numeric and 5 digits",
+				message: VALIDATION_ERRORS.ZIP_CODE_INVALID,
 				excludeEmptyString: true
 			}
 		)
 		.matches(
 			/98107/,
 			{
-				message: "Address is not correct",
+				message: VALIDATION_ERRORS.ZIP_CODE_MISMATCH,
 				excludeEmptyString: true
 			}
 		),
 	emailAddress: yup
 		.string()
-		.required("Email Address is a required field")
-		.email("Invalid Email Address"),
+		.required(VALIDATION_ERRORS.EMAIL_ADDRESS_REQUIRED)
+		.email(VALIDATION_ERRORS.EMAIL_ADDRESS_INVALID),
 });
 
 const useStyles = makeStyles( ( theme ) => ({
@@ -82,7 +83,7 @@ ${data.emailAddress}`
 					error={!!errors.firstName}
 					id="first-name"
 					name="firstName"
-					label="First Name"
+					label={FIELD_LABELS.FIRST_NAME}
 					inputRef={register}
 					defaultValue=""
 					helperText={errors.firstName?.message}
@@ -91,7 +92,7 @@ ${data.emailAddress}`
 					error={!!errors.lastName}
 					id="last-name"
 					name="lastName"
-					label="Last Name"
+					label={FIELD_LABELS.LAST_NAME}
 					inputRef={register}
 					defaultValue=""
 					helperText={errors.lastName?.message}
@@ -100,7 +101,7 @@ ${data.emailAddress}`
 					error={!!errors.city}
 					id="city"
 					name="city"
-					label="City"
+					label={FIELD_LABELS.CITY}
 					inputRef={register}
 					defaultValue=""
 					helperText={errors.city?.message}
@@ -109,7 +110,7 @@ ${data.emailAddress}`
 					error={!!errors.zipCode}
 					id="zip-code"
 					name="zipCode"
-					label="Zip Code"
+					label={FIELD_LABELS.ZIP_CODE}
 					inputRef={register}
 					defaultValue=""
 					helperText={errors.zipCode?.message}
@@ -118,7 +119,7 @@ ${data.emailAddress}`
 					error={!!errors.emailAddress}
 					id="email-address"
 					name="emailAddress"
-					label="Email Address"
+					label={FIELD_LABELS.EMAIL_ADDRESS}
 					inputRef={register}
 					defaultValue=""
 					helperText={errors.emailAddress?.message}
