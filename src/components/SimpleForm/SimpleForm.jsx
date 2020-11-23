@@ -1,7 +1,43 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+import * as yup from "yup";
 import { makeStyles } from '@material-ui/core/styles';
+import { useForm } from "react-hook-form";
+import { yupResolver } from '@hookform/resolvers/yup';
+
+const schema = yup.object().shape({
+	firstName: yup
+		.string()
+		.required("First Name is a required field"),
+	lastName: yup
+		.string()
+		.required("Last Name is a required field"),
+	city: yup
+		.string()
+		.required("City is a required field"),
+	zipCode: yup
+		.string()
+		.required("Zip Code is a required field")
+		.matches(
+			/^\d{5}$/,
+			{
+				message: "Zip code can only be numeric and 5 digits",
+				excludeEmptyString: true
+			}
+		)
+		.matches(
+			/98107/,
+			{
+				message: "Address is not correct",
+				excludeEmptyString: true
+			}
+		),
+	emailAddress: yup
+		.string()
+		.required("Email Address is a required field")
+		.email("Invalid Email Address"),
+});
 
 const useStyles = makeStyles( ( theme ) => ({
 	root : {
@@ -10,87 +46,96 @@ const useStyles = makeStyles( ( theme ) => ({
 			width  : 200,
 		},
 	},
+	submit: {
+		'margin-top': '24px',
+	},
 }) );
 
 function SimpleForm() {
 	const classes = useStyles();
 
+	const { register, errors, handleSubmit } = useForm({
+		mode: 'onTouched',
+		reValidateMode: 'onChange',
+		resolver: yupResolver(schema),
+		criteriaMode: "firstError",
+	});
+
+	const onSubmit = data => {
+		alert(
+			`${data.firstName} ${data.lastName}
+${data.city}, ${data.zipCode}
+${data.emailAddress}`
+		);
+	};
+
+	const hasAnyErrors = !!errors.firstName
+		|| !!errors.lastName
+		|| !!errors.city
+		|| !!errors.zipCode
+		|| !!errors.emailAddress;
+
 	return (
-		<form className={classes.root} noValidate autoComplete="off" >
-			<div >
-				<TextField error id="standard-error" label="Error"
-						   defaultValue="Hello World" />
-				<TextField
-					error
-					id="standard-error-helper-text"
-					label="Error"
-					defaultValue="Hello World"
-					helperText="Incorrect entry."
-				/>
-			</div >
+		<form onSubmit={handleSubmit(onSubmit)} className={classes.root} noValidate autoComplete="off" >
 			<div >
 				<TextField
-					error
-					id="filled-error"
-					label="Error"
-					defaultValue="Hello World"
-					variant="filled"
+					error={!!errors.firstName}
+					id="first-name"
+					name="firstName"
+					label="First Name"
+					inputRef={register}
+					defaultValue=""
+					helperText={errors.firstName?.message}
 				/>
 				<TextField
-					error
-					id="filled-error-helper-text"
-					label="Error"
-					defaultValue="Hello World"
-					helperText="Incorrect entry."
-					variant="filled"
-				/>
-			</div >
-			<div >
-				<TextField
-					error
-					id="outlined-error"
-					label="Error"
-					defaultValue="Hello World"
-					variant="outlined"
+					error={!!errors.lastName}
+					id="last-name"
+					name="lastName"
+					label="Last Name"
+					inputRef={register}
+					defaultValue=""
+					helperText={errors.lastName?.message}
 				/>
 				<TextField
-					error
-					id="outlined-error-helper-text"
-					label="Error"
-					defaultValue="Hello World"
-					helperText="Incorrect entry."
-					variant="outlined"
+					error={!!errors.city}
+					id="city"
+					name="city"
+					label="City"
+					inputRef={register}
+					defaultValue=""
+					helperText={errors.city?.message}
 				/>
+				<TextField
+					error={!!errors.zipCode}
+					id="zip-code"
+					name="zipCode"
+					label="Zip Code"
+					inputRef={register}
+					defaultValue=""
+					helperText={errors.zipCode?.message}
+				/>
+				<TextField
+					error={!!errors.emailAddress}
+					id="email-address"
+					name="emailAddress"
+					label="Email Address"
+					inputRef={register}
+					defaultValue=""
+					helperText={errors.emailAddress?.message}
+				/>
+				<Button
+					type="submit"
+					fullWidth
+					variant="contained"
+					color="primary"
+					className={classes.submit}
+					disabled={hasAnyErrors}
+				>
+					Submit
+				</Button>
 			</div >
 		</form >
 	);
-
-	/*
-	return (
-		<Button variant="contained" color="primary">
-			Hello WorldX
-		</Button>
-	);
-	/*
-	return (
-	  <div className="App">
-		<header className="App-header">
-		  <img src={logo} className="App-logo" alt="logo" />
-		  <p>
-			Edit <code>src/App.js</code> and save to reload.
-		  </p>
-		  <a
-			className="App-link"
-			href="https://reactjs.org"
-			target="_blank"
-			rel="noopener noreferrer"
-		  >
-			Learn React
-		  </a>
-		</header>
-	  </div>
-	);
-	 */
 }
 
 export default SimpleForm;
